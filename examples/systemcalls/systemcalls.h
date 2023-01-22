@@ -1,6 +1,12 @@
+#define _XOPEN_SOURCE
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <string.h>
 
 bool do_system(const char *command);
 
