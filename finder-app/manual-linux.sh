@@ -13,7 +13,6 @@ BUSYBOX_VERSION=1_33_1
 FINDER_APP_DIR=$(realpath $(dirname $0))
 ARCH=arm64
 CROSS_COMPILE=aarch64-none-linux-gnu-
-WRITER_DIR=~/Coursera/linux-system-programming/assignments-3-and-later-sky2day/finder-app
 
 if [ $# -lt 1 ]
 then
@@ -51,6 +50,7 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
 
     echo "Build the devicetree"
     make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} dtbs
+
 fi
 
 echo "Adding the Image in outdir"
@@ -79,7 +79,7 @@ then
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
     # make distclean
-    # make CONFIG_PREFIX=${OUTDIR}/rootfs defconfig
+    # make defconfig
 
 else
     cd busybox
@@ -88,9 +88,8 @@ fi
     make defconfig
 
 # TODO: Make and install busybox
-make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
+make CONFIG_PREFIX=${STAGINGDIR} ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
 make CONFIG_PREFIX=${STAGINGDIR} ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} install
-
 
 echo "Library dependencies"
 ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter"
@@ -101,12 +100,13 @@ ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 
 
 # TODO: Add library dependencies to rootfs
-export SYSROOT=$(aarch64-none-linux-gnu-gcc -print-sysroot)
-cp -a ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib64
-cp -a ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib
-cp -a ${SYSROOT}/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64
-cp -a ${SYSROOT}/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64
-cp -a ${SYSROOT}/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64
+SYSROOT=$(${CROSS_COMPILE}gcc -print-sysroot)
+echo "${SYSROOT}"
+cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib
+cp ${SYSROOT}/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64
 
 # TODO: Make device nodes
 cd ${OUTDIR}/rootfs
@@ -114,7 +114,8 @@ sudo mknod -m 666 dev/null c 1 3
 sudo mknod -m 600 dev/console c 5 1
 
 # TODO: Clean and build the writer utility
-cd ${WRITER_DIR}
+# ~/Coursera/linux-system-programming/assignments-3-and-later-sky2day/finder-app
+cd ${FINDER_APP_DIR}
 make clean
 make CROSS_COMPILE=${CROSS_COMPILE}
 
