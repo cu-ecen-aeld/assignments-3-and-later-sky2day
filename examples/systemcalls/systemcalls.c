@@ -73,7 +73,8 @@ bool do_exec(int count, ...)
     //char * command_args  = command +1;
    // execv (command[0], command_args);
     execv (command[0], command);
-    printf("Unknown command: %s\n", command);
+   // printf("Unknown command: %s\n", &command);
+    //printf("Unknown command: %.*s\n", (int)sizeof(command), command);
     exit (EXIT_FAILURE);
   }
 
@@ -132,15 +133,16 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     return -1;
   } else if (child_pid == 0) {
     printf("Child process: %d\n", child_pid);
-    char * command_args  = &command +1;
+   // char * command_args  = &command +1;
 
     if (dup2(fd, 1) < 0) { 
       printf("dup2"); 
       return 1; 
     }
     close(fd);
-    execv (command[0], command_args);
-    printf("Unknown command: %s\n", command);
+    execv (command[0], command);
+   //printf("Unknown command: %s\n", &command);
+   // printf("Unknown command: %.*s\n", (int)sizeof(command), command);
     exit (EXIT_FAILURE);
   }
 

@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <sys/stat.h>
+#include <fcntl.h>
 bool do_system(const char *command);
 
 bool do_exec(int count, ...);
