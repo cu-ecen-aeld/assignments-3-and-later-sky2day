@@ -93,8 +93,8 @@ make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
 make CONFIG_PREFIX=${STAGINGDIR} ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} install
 
 echo "Library dependencies"
-${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter"
-${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
+#${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter"
+#${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 # 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
 # 0x0000000000000001 (NEEDED)             Shared library: [libresolv.so.2]
 # 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
