@@ -67,7 +67,7 @@ bool do_exec(int count, ...)
   char * path = command[0];
   if(path[0] != '/') {
     printf("Path is not absolute: %s\n", path);
-     return -1;
+     return false;
   }
   int child_status;
   pid_t child_pid;
