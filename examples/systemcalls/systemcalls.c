@@ -64,6 +64,11 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+  char * path = command[0];
+  if(path[0] != '/') {
+    printf("Path is not absolute: %s\n", path);
+     return -1;
+  }
   int child_status;
   pid_t child_pid;
   if ((child_pid = fork()) < 0) {
