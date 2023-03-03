@@ -65,10 +65,17 @@ bool do_exec(int count, ...)
  *
 */
   char * path = command[0];
-  if(path[0] != '/') {
+  if(path[0] != "/") {
     printf("Path is not absolute: %s\n", path);
-     return false;
+    return false;
   }
+  path = command[count-1];
+  if(command[count-2] == "-f" && path[0] != "/") {
+    printf("File argument is not absolute path: %s\n", path);
+    return false;
+ 
+  }
+
   int child_status;
   pid_t child_pid;
   if ((child_pid = fork()) < 0) {
