@@ -40,6 +40,7 @@ bool do_system(const char *cmd)
 *   by the command issued in @param arguments with the specified arguments.
 */
 
+
 bool do_exec(int count, ...)
 {
     va_list args;
@@ -51,9 +52,6 @@ bool do_exec(int count, ...)
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
-    // this line is to avoid a compile warning before your implementation is complete
-    // and may be removed
-    //command[count] = command[count];
 
 /*
  * TODO:
@@ -69,19 +67,19 @@ bool do_exec(int count, ...)
     printf("Path is not absolute: %s\n", command_path);
     return false;
   }
-
    
-   char *f_option = "-f";
-   char *result;
-   result = strstr(*command, f_option);
-   // Result = a pointer to "f_option"
-   if(result) {
-     char *file_path = result + 2;
-     if(file_path[0] != '/') {
-       printf("File argument is not absolute path: %s\n", file_path);
-       return false; 
-     } 
-  }
+   for(i=1; i<count-1; i++) {
+     printf("Comparing  %s and -f\n", command[i]);
+     if(strcmp(command[i], "-f") == 0) {
+       printf("-f option was passed with command\n");
+       char * file_path = command[i+1];
+       if(file_path[0] != '/') {
+         printf("File argument is not absolute path: %s\n", file_path);
+         return false; 
+       }
+     }
+   }
+
   int child_status;
   pid_t child_pid;
   if ((child_pid = fork()) < 0) {
@@ -109,6 +107,8 @@ bool do_exec(int count, ...)
 
     return true;
 }
+
+
 
 /**
 * @param outputfile - The full path to the file to write with command output.
