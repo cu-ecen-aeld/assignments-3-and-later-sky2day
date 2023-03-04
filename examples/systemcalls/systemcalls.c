@@ -69,15 +69,19 @@ bool do_exec(int count, ...)
     printf("Path is not absolute: %s\n", command_path);
     return false;
   }
-  char * file_path = command[count-1];
-  if(strcmp('-f', command[count-2]) == 0) {
-    char * file_path = command[count-1];
-    if(file_path[count-1] != '/') {    
-      printf("File argument is not absolute path: %s\n", file_path);
-      return false;
-    }
-  }
 
+   
+   char *f_option = "-f";
+   char *result;
+   result = strstr(*command, f_option);
+   // Result = a pointer to "f_option"
+   if(result) {
+     char *file_path = result + 2;
+     if(file_path[0] != '/') {
+       printf("File argument is not absolute path: %s\n", file_path);
+       return false; 
+     } 
+  }
   int child_status;
   pid_t child_pid;
   if ((child_pid = fork()) < 0) {
