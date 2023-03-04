@@ -64,16 +64,18 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
-  char * path = command[0];
-  if(path[0] != '/') {
-    printf("Path is not absolute: %s\n", path);
+  char * command_path = command[0];
+  if(command_path[0] != '/') {
+    printf("Path is not absolute: %s\n", command_path);
     return false;
   }
-  path = command[count-1];
-  if(command[count-2] == "-f" && path[0] != '/') {
-    printf("File argument is not absolute path: %s\n", path);
-    return false;
- 
+  char * file_path = command[count-1];
+  if(strcmp('-f', command[count-2]) == 0) {
+    char * file_path = command[count-1];
+    if(file_path[count-1] != '/') {    
+      printf("File argument is not absolute path: %s\n", file_path);
+      return false;
+    }
   }
 
   int child_status;
