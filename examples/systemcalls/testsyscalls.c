@@ -40,33 +40,32 @@ bool do_exec(int count, ...)
        if(file_path[0] != '/') {
          printf("File argument is not absolute path: %s\n", file_path);
          return false; 
-     }
-       
+       } 
      }
    }
+
+  fflush(stdout);
 
   int child_status;
   pid_t child_pid;
   if ((child_pid = fork()) < 0) {
-    return -1;
+    return false;
   } else if (child_pid == 0) {
-    printf("Child process: %d\n", child_pid);
-    //char * command_args  = command +1;
-   // execv (command[0], command_args);
-    execv (command[0], command);
-   // printf("Unknown command: %s\n", &command);
-    //printf("Unknown command: %.*s\n", (int)sizeof(command), command);
-    exit (EXIT_FAILURE);
+      printf("Child process: %d\n", child_pid);
+      int execv_res =  execv (command[0], command);
+      if(execv_res == -1) {
+        exit (EXIT_FAILURE);
+      }
   }
 
   if (waitpid (child_pid, &child_status, 0) == -1) {
-    return -1;
+    return false;
   } else if (WIFEXITED (child_status)) {
-    return WEXITSTATUS (child_status);
+      printf("WIFEXITED- child_status: %d\n", child_status);
+      if(WEXITSTATUS (child_status) != 0) {
+        return false;
+      }
   }
-
-  //return -1;
-
 
     va_end(args);
 
@@ -91,8 +90,9 @@ void test_exec_calls()
 */
 
 int main(void) {
-  do_exec(2, "echo", "Testing execv implementation with echo");
-  do_exec(3, "/usr/bin/test","-f","echo");
- // do_exec(3, "/usr/bin/test","-f","/bin/echo"); 
+ // do_exec(2, "echo", "Testing execv implementation with echo");
+ // do_exec(3, "/usr/bin/test","-f","echo");
+ bool result3 =  do_exec(3, "/usr/bin/test","-f","/bin/echo");
+ printf("Result of test 3: %s\n", result3 ? "true" : "false"); 
  return 1;
 }
