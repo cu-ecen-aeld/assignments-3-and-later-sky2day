@@ -54,7 +54,6 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
 fi
 
 echo "Adding the Image in outdir"
-
 cp ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ${OUTDIR}
 echo "Creating the staging directory for the root filesystem"
 cd "$OUTDIR"
@@ -65,6 +64,7 @@ then
 fi
 
 # TODO: Create necessary base directories
+echo "Create necessary base directories"
 mkdir ${OUTDIR}/rootfs
 cd ${OUTDIR}/rootfs
 mkdir bin dev etc home lib lib64 proc sbin sys tmp usr var
@@ -89,10 +89,11 @@ fi
     #make defconfig
 
 # TODO: Make and install busybox
+echo "Make and install busybox"
 make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
 make CONFIG_PREFIX=${STAGINGDIR} ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} install
 
-echo "Library dependencies"
+#echo "Library dependencies"
 #${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter"
 #${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 # 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
@@ -102,26 +103,28 @@ echo "Library dependencies"
 
 # TODO: Add library dependencies to rootfs
 SYSROOT=$(${CROSS_COMPILE}gcc -print-sysroot)
-echo "${SYSROOT}"
-cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib64
+echo "Add library dependencies to rootfs\nDYDROOT: ${SYSROOT}"
+#cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib64
 cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib
 cp ${SYSROOT}/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64
 cp ${SYSROOT}/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64
 cp ${SYSROOT}/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64
 
 # TODO: Make device nodes
+echo "Make device nodes"
 cd ${OUTDIR}/rootfs
 sudo mknod -m 666 dev/null c 1 3
 sudo mknod -m 600 dev/console c 5 1
 
 # TODO: Clean and build the writer utility
-# ~/Coursera/linux-system-programming/assignments-3-and-later-sky2day/finder-app
+echo "Clean and build the writer utility \n FINDER_APP_DIR: ${FINDER_APP_DIR}"
 cd ${FINDER_APP_DIR}
 make clean
 make CROSS_COMPILE=${CROSS_COMPILE}
 
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
+echo "Copy the finder related scripts and executables to the /home directory"
 cp writer ${OUTDIR}/rootfs/home
 cp finder.sh ${OUTDIR}/rootfs/home
 cp finder-test.sh ${OUTDIR}/rootfs/home
@@ -130,9 +133,11 @@ cp conf/username.txt ${OUTDIR}/rootfs/home/conf
 cp conf/assignment.txt ${OUTDIR}/rootfs/home/conf
 
 # TODO: Chown the root directory
+echo "Chown the root directory"
 cd ${OUTDIR}/rootfs
 sudo chown -R root:root *
 
 # TODO: Create initramfs.cpio.gz
+echo "Create initramfs.cpio.gz"
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 gzip -f ${OUTDIR}/initramfs.cpio
