@@ -6,7 +6,6 @@ set -e
 set -u
 
 OUTDIR=/tmp/aeld
-STAGINGDIR=/tmp/aeld/rootfs
 KERNEL_REPO=git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
 KERNEL_VERSION=v5.1.10
 BUSYBOX_VERSION=1_33_1
@@ -91,7 +90,7 @@ fi
 # TODO: Make and install busybox
 echo "Make and install busybox"
 make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
-make CONFIG_PREFIX=${STAGINGDIR} ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} install
+make CONFIG_PREFIX=${OUTDIR}/rootfs ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} install
 
 #echo "Library dependencies"
 #${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter"
