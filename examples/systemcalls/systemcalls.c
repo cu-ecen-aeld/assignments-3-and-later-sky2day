@@ -62,6 +62,8 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+
+/*
   char * command_path = command[0];
   if(command_path[0] != '/') {
     printf("Path is not absolute: %s\n", command_path);
@@ -79,7 +81,7 @@ bool do_exec(int count, ...)
        } 
      }
    }
-
+*/
   fflush(stdout);
 
   int child_status;
