@@ -18,17 +18,17 @@ void* threadfunc(void* thread_param)
 
     int sleep_before_lock = (args -> wait_to_obtain_ms);
     usleep(sleep_before_lock * 1000);
-    printf("Thread slept before lock: %d\n millis", sleep_before_lock);
-    // pthread_mutex_lock (&args->mutex);
-    while(pthread_mutex_trylock (&args->mutex)) {
-        usleep(1000);
-    }
+    printf("Thread slept before lock: %d millis\n", sleep_before_lock);
+    pthread_mutex_lock (args->mutex);
+
+    printf("\nLOCKED\n");
     int sleep_before_unlock = (args -> wait_to_release_ms);
     usleep(sleep_before_unlock * 1000);
-    printf("Thread slept after lock: %d\n millis", sleep_before_unlock);
-    pthread_mutex_unlock (&args->mutex);
-     
-    printf("Mutex unlocked:");
+    printf("Thread slept before unlock: %d millis\n", sleep_before_unlock);
+    pthread_mutex_unlock (args->mutex);
+    printf("\nMutex unlocked\n");
+
+    args -> thread_complete_success = true;
     pthread_exit(args);
 
     // return thread_param;
@@ -51,7 +51,7 @@ void* threadfunc(void* thread_param)
 * @return true if the thread could be started, false if a failure occurred.
 */
 
-bool start_thread_obtaining_mutex(pthread_t *thread, pthread_mutex_t *mutex,int wait_to_obtain_ms, int wait_to_release_ms)
+bool start_thread_obtaining_mutex(pthread_t *thread, pthread_mutex_t *p_mutex,int wait_to_obtain_ms, int wait_to_release_ms)
 {
     /**
      * TODO: allocate memory for thread_data, setup mutex and wait arguments, pass thread_data to created thread
@@ -61,15 +61,17 @@ bool start_thread_obtaining_mutex(pthread_t *thread, pthread_mutex_t *mutex,int 
      *
      * See implementation details in threading.h file comment block
      */
+
+     //setup mutex and wait arguments
+     // pthread_mutex_init(mutex, NULL);
      
      //allocate memory for thread_data thread_data
      struct thread_data *data = malloc(sizeof (struct thread_data));
-     data -> mutex = *mutex;
+     data -> mutex = p_mutex;
      data -> wait_to_obtain_ms = wait_to_obtain_ms;
      data -> wait_to_release_ms = wait_to_release_ms;
 
-     //setup mutex and wait arguments
-     pthread_mutex_init(mutex, NULL);
+
      
      //pass thread_data to created thread using threadfunc() as entry point.
      int t = pthread_create(thread, NULL, threadfunc, (void*) data);
